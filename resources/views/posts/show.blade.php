@@ -7,15 +7,18 @@
     h5{
         font-weight: bold;
     }
+    body{
+        background-color: rgb(8, 66, 113)
+    }
 </style>
 <div class="card my-5">
     <div class="card-header">
       Post info
     </div>
     <div class="card-body">
-      <h5 class="card-title">Title: {{$post['title']}}</h5>
+      <h5 class="card-title">Title: {{ $post->title}}</h5>
       <h5 class="card-title">Description: </h5>
-      <p class="card-text">We will descripe the {{$post['title']}} language.</p>
+      <p class="card-text">We will descripe the {{ $post->title}} language.</p>
     </div>
   </div>
 <div class="card">
@@ -23,10 +26,10 @@
       Post Creator info
     </div>
     <div class="card-body">
-      <h5 class="card-title ">Name: {{$post['posted_by']}}</h5>
-      <h5 class="card-title ">Title: {{$post['title']}}</h5>
-      <h5 class="card-title">Created at: {{$post['created_at']}}</h5>
-      <p class="card-text">We will descripe the {{$post['title']}} language..</p>
+      <h5 class="card-title ">Name: {{ $post->posted_by}}</h5>
+      <h5 class="card-title ">Title: {{ $post->title}}</h5>
+      <h5 class="card-title">Created at: {{ $post->created_at}}</h5>
+      <p class="card-text">We will descripe the {{ $post->title}} language..</p>
     </div>
   </div>
   @endsection

@@ -9,6 +9,7 @@ use App\Http\Requests\StorePostRequest;
 
 
 
+
 //*index
 class PostController extends Controller
 {
@@ -34,6 +35,10 @@ class PostController extends Controller
     //*store
     public function store(StorePostRequest $request){
 
+        $request->validate([
+            'title' => 'required|unique:posts|min:3',
+            'description' => ['required', 'min:10']
+        ]);
 
         $data = $request->all();
         $title = $data['title'];
@@ -69,6 +74,11 @@ class PostController extends Controller
 
     public function update($postId, Request $request)
      { 
+        $request->validate([
+            'title' => 'required|unique:posts|min:3',
+            'description' => ['required', 'min:10']
+        ]);
+
         $allPosts = Post::find($postId);
         if(!$allPosts) {
             return to_route(route: 'posts.index');}

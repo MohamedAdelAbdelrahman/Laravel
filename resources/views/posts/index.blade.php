@@ -47,7 +47,7 @@
                     {{-- <td>{{$post->user?->name}}</td> --}}
                     {{--//*3 error in display format of created_at(->format('Y-m-d')) --}}
                     <td>{{$post->user? $post->user->name:'Not Found'}}</td>
-                    <td>{{$post->created_at}}</td>
+                    <td>{{$post->created_at->format('Y-m-d')}}</td>
 
                     <td>
                         <form action="{{ route('posts.destroy',$post->id)}}"
@@ -58,7 +58,8 @@
                         class="btn btn-primary">Edit</a>
                         @csrf
                         @method('DELETE')
-                        <button type ="submit" class="btn btn-danger">Delete</button>
+                        <button onclick="return confirm('Are you sure?')" 
+                        class="btn btn-danger">Delete</button>
                 </form>
                     </td>
                 </tr>
@@ -69,7 +70,7 @@
         
             </tbody>
         </table>
-        {{ $posts->links('pagination::bootstrap-4') }}
+        {{ $posts->links('pagination::bootstrap-5') }}
     </div>
 </div>
 

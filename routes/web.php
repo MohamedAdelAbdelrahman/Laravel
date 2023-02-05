@@ -2,6 +2,10 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\CommentController;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Post;
+use Laravel\Socialite\Facades\Socialite;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,3 +35,27 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 
 Route::put('/posts/{post}', [PostController::class, 'update'])->name('posts.update');
 Route::delete('/posts/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
+
+
+// Route::get('/image', [ImageController::class,'index'])->name('image.index');
+// Route::post('/image', [ImageController::class,'store'])->name('image.store'); 
+
+Route::get('/auth/redirect', function () {
+    return Socialite::driver('github')->redirect();
+});
+ 
+Route::get('/auth/callback', function () {
+  $user = Socialite::driver('github')->user();
+
+  Route::post('/comments/{id}', [CommentController::class, 'store'])->name('posts.comments');
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+});
+
+Route::get('/home', function() {
+  return redirect()->to('./posts');
+
+  
+  
+    // $user->token
+});

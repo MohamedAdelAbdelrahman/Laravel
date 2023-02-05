@@ -13,14 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('posts', function (Blueprint $table) {
-            $table->id();
-            $table->string( column:'title');
-            $table->text( column:'description');
-            $table->string( column:'image');
-            $table->timestamps();
+        Schema::table('posts', function (Blueprint $table) {
+            // column modify on migration
+            $table->string('image_path')->nullable();
         });
     }
-
-    
 };

@@ -2,134 +2,97 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
-use App\Models\Post;
 use App\Models\User;
 use App\Models\Comment;
-use Illuminate\Support\Facades\Storage;
-use App\http\Requests\StorePostRequest;
+use Illuminate\Http\Request;
+use App\Models\Post;
+use App\Http\Requests\StorePostRequest;
 
-
-
-
-//*index
 class PostController extends Controller
 {
-    public function index(){
-        {
-            $allPosts = Post::paginate(5);
-            return view('posts.index',[
+    public function index()
+    {
+        // $allPosts = Post::with('user')->all();
+        //select * from posts;
+        $allPosts = Post::paginate(5);
+        return view('posts.index',[
             'posts' => $allPosts,
-            ]);
-            
-        }
+        ]);
     }
-    //*create
 
-    public function create(){
+    public function create()
+    {
         $users = User::get();
-        return view('posts.create',['users' => $users,]);
-    }
 
-    //*store
-    public function store(StorePostRequest $request){
+        return view('posts.create',[
+            'users' => $users,
+        ]);    }
 
+    public function store(StorePostRequest $request)
+    {
+        // image
+        $image_path = $request->file('image')->store('image', 'public');
+        // return 'insert in database';
         $data = $request->all();
         $title = $data['title'];
         $description = $data['description'];
-        $userId = $data['post_creator'];
-
-        $image_path = null;
-        if ($request->hasFile('image')) {
-            $postImage = $request->file('image');
-            $image_path = $postImage->store('images');
-        }
-
-
         Post::create([
-            'title'=>$title,
-            'description'=>$description,
-            'user_id'=>$userId,
-            'image_path' => $image_path,
-        ]);
-
-        return to_route('posts.index');
-
-        $this->validate($request, [
-            'image' => 'required|image|mimes:jpg,png,jpeg,gif,svg|max:2048',
-        ]);
-
-        $image_path = $request->file('image')->store('image', 'public');
-
-        $data = Post::create([
+            'title' => $title,
+            'description' => $description,
+            'user_id' =>$request->userId,
             'image' => $image_path,
         ]);
-
         session()->flash('success', 'Image Upload successfully');
 
-        return redirect()->route('posts.index');
-    
-    }
- 
+              return redirect('/posts') ;
 
-    //*show
-    public function show($postId){
-        
-        $comments = Comment::where('post_id', $postId)->get();
-        $allPosts = Post::find($postId);
-        return view('posts.show', [
-            'post' => $allPosts,
-            'comments' => $comments
+    }
+
+    public function show($postId)
+    {
+        $allComments = Comment::all();
+        $users = User::get();
+        $post = Post::find($postId);
+        return view('posts.show',[
+            'posts'=> $post,
+            'users' => $users,
+            'comments' => $allComments,
+             'id' => $postId
         ]);
     }
-
-    //*edit
-    public function edit($postId)
+    public function edit($id )
     {
         $users = User::get();
-        $allPosts = Post::find($postId);
+        $post = Post::find($id);
+        return view('posts.edit',[
+            'posts'=> $post,
+            'users' => $users,
 
-        return view('posts.edit',['post'=>$allPosts, 'users'=>$users]);
+        ]);
     }
-    //*update
+    public function update($id ,StorePostRequest $request)
+    {
+        $image_path = $request->file('image')->store('image', 'public');
+        $post = Post::find($id);
+        $post->update([
+            'title' =>$request->title,
+            'description' =>$request->description,
+            'user_id' =>$request->userId,
+            'image'=>$image_path
 
-    public function update($postId, Request $request)
-     { 
-        $allPosts = Post::find($postId);
-        if(!$allPosts) {
-            return to_route(route: 'posts.index');}
-            $allPosts->title = $request->title;
-            $allPosts->description = $request->description;
-            $allPosts->user_id = $request->posted_at;
-            $allPosts->save();
-            return to_route(route: 'posts.index');
-
-            if ($request->hasFile('image')) {
-                Storage::delete($allPosts->image_path);
-                $postImage = $request->file('image');
-                $image_path = $postImage->store('images');
-                $allPosts->image_path = $image_path;
-            } elseif (isset($request->delete_image)) {
-                Storage::delete($allPosts->image_path);
-                $image_path = '';
-                $allPosts->image_path = $image_path;
-            }
+        ]);
+        return redirect('/posts') ;
 
     }
 
-    //*delete
-    public function destroy($postId){
-            $allPosts = Post::find($postId);
-            if(!$allPosts) {return to_route(route: 'posts.index');}
+    public function destroy($id)
+    {
+        $post = Post::find($id);
+        $post->delete();
 
-            $postComments = Comment::where('id', $postId)->get();
-            $postComments->each->delete();
-    
-            Storage::delete($allPosts->image_path);
+        return redirect('/posts') ;
 
-            $allPosts->delete();
-            return redirect()->route('posts.index');
-            }
+
+    }
 
 }

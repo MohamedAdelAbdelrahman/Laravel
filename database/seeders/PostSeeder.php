@@ -1,11 +1,10 @@
 <?php
 
 namespace Database\Seeders;
-
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
-
 use App\Models\Post;
+
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
 
 class PostSeeder extends Seeder
 {
@@ -14,9 +13,13 @@ class PostSeeder extends Seeder
      *
      * @return void
      */
-    // php artisan db:seed --class=PostSeeder
     public function run()
     {
-        Post::factory()->count(10)->create();
+
+        Post::create([
+            'title' => "football",
+            'description' => "wooooooooo",
+        ]);
+
     }
 }

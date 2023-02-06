@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title') edit @endsection
+@section('title') EDit @endsection
 
 @section('content')
 <style>
@@ -10,32 +10,42 @@
     label,p{
         font-weight: bold;
     }
-</style>
-<form action="/posts/{{$post['id']}}" method="POST">
-  @csrf
-  @method('PUT')
-  <div class="mb-3">
-    <label for="title" class="form-label">Title</label>
-    <input type="text" class="form-control" name="title" value="{{$post['title']}}" id="title">
-  </div>
-  <div class="form-floating mb-3">
-    <p class="form-label">Description</p>
-    <textarea class="form-control" id="desc" name="description" style="height: 100px">
-      {{ $post->description}}</textarea>
-  </div>
+    </style>
+  @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+ <form method="Post" action="{{route('posts.update', $posts['id'])}}">
+ @csrf
+ @method('PUT')
+        <div class="mb-3">
+            <label class="form-label">Title</label>
+            <input type="text" name="title" class="form-control" value="{{$posts['title']}}" >
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Image</label>
+            <img src="{{Storage::disk('local')->url($posts->image)}}" alt="" srcset="" width="100px" height="100px">;    </div>
 
-  
+            <input type="file" name="image" class="form-control"  >
+        </div>
+        <div class="mb-3">
+            <label  class="form-label">Description</label>
+            <textarea name="description" class="form-control">{{$posts['description']}} </textarea>
+        </div>
+        <div class="mb-3">
+            <label class="form-check-label">Post Creator</label>
+            <select name="userId" class="form-control">
+                @foreach($users as $user)
+                    <option value="{{$user->id}}"@if($user->id ==$posts->user_id) selected @endif>{{$user->name}}</option>
+                @endforeach
+            </select>
+        </div>
 
-  <div class="mb-3">
-    <label class="form-check-label">Post Creator</label>
-
-    <select name="posted_at" class="form-control">
-    @foreach($users as $user)
-     <option value="{{$user->id}}" @if ($user-> id == $post->user_id) selected @endif> {{$user->name}}</option>
-    @endforeach
-    </select>
-</div>
-  
-  <button type="submit" class="btn btn-primary">Update</button>
-</form>
-  @endsection
+        <button type="submit" class="btn btn-success">Submit</button>
+    </form>
+@endsection

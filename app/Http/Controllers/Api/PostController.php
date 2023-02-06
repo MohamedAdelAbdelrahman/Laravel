@@ -8,6 +8,7 @@ use App\Http\Resources\PostResource;
 use App\Models\Post;
 use Illuminate\Http\Request;
 
+
 class PostController extends Controller
 {
     public function index()
@@ -15,7 +16,6 @@ class PostController extends Controller
         $posts = Post::all();
 
         return PostResource::collection($posts);
-        
 
 //        $response = [];
 //
@@ -58,5 +58,4 @@ class PostController extends Controller
         ]);
 
         return $post;
-    }
-}
+    }}

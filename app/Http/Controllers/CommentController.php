@@ -4,39 +4,28 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Comment;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Post;
+
 
 class CommentController extends Controller
 {
-    public function store(Request $request)
+    public function store(Request $request ,$id)
     {
-        // always make a request to validate
-        // $request->validate([
-        //     'text' => ['required'],
-        //     'postId' => ['required', 'exists:posts,id'],
-        // ]);
-        $data = request()->all(); //insted of using $_POST 
-        $comment = $data['text'];
-        $post_id = $data['post_id'];
-        Comment::create([
-            'text' => $comment,
-            'post_id' => $post_id,
-            'user_id' => Auth::user()->id,
-        ]);
-        return redirect()->route('posts.show', $post_id);
+
+
+        $comment = new Comment();
+        $comment->comment_body = $request->comment;
+        $comment->post_id =$id ;
+        $comment->user_id =$id ;
+        $comment->save();
+              return redirect()->back() ;
+
+    }
+    public function destroy($id)
+    {
+        $comment = Comment::find($id);
+        $comment->delete();
+        return redirect()->back() ;
     }
 
-    public function destroy($commentId)
-    {
-        $UserComment = Comment::find($commentId);
-
-        if (!$UserComment) {
-            return to_route(route: 'posts.index');
-        }
-
-        $post_id = $UserComment['post_id'];
-        $UserComment->delete();
-
-        return redirect()->route('posts.show', $post_id);
-    }
 }

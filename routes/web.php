@@ -1,12 +1,10 @@
 <?php
+use Laravel\Socialite\Facades\Socialite;
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\CommentController;
-use Illuminate\Support\Facades\Auth;
-use App\Models\Post;
-use Laravel\Socialite\Facades\Socialite;
-
+use App\Models\user;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -21,41 +19,68 @@ use Laravel\Socialite\Facades\Socialite;
 Route::get('/', function () {
     return view('welcome');
 });
-Route::get('/posts', [PostController::class, 'index'])->name('posts.index')->middleware(middleware:'auth');
 
-Route::get('/posts/create', [PostController::class, 'create'])->name('posts.create')->middleware(middleware:'auth');
+Route::get('/posts', [PostController::class, 'index'])->name('posts.index')->middleware(['auth']);
+
+Route::get('/posts/create', [PostController::class, 'create'])->name('posts.create')->middleware(['auth']);
 
 Route::post('/posts', [PostController::class, 'store']);
 
-Route::get('/posts/{post}', [PostController::class, 'show'])->name('posts.show');
-Route::get('/posts/{post}/edit', [PostController::class, 'edit'])->name('posts.edit');
+Route::get('/posts/{post}', [PostController::class, 'show'])->name('posts.show')->middleware('auth');
+Route::get('/posts/{post}/edit', [PostController::class, 'edit'])->name('posts.edit')->middleware('auth');
+Route::PUT('/posts/{post}', [PostController::class, 'update'])->name('posts.update');
+Route::DELETE('/posts/{post}', [PostController::class, 'destroy'])->name('posts.destroy')->middleware('auth');
+// comment
+Route::post('/comments/{id}', [CommentController::class, 'store'])->name('comments.store');
+Route::DELETE('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
+
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-Route::put('/posts/{post}', [PostController::class, 'update'])->name('posts.update');
-Route::delete('/posts/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
 
-
-// Route::get('/image', [ImageController::class,'index'])->name('image.index');
-// Route::post('/image', [ImageController::class,'store'])->name('image.store'); 
-
+// Githup
 Route::get('/auth/redirect', function () {
     return Socialite::driver('github')->redirect();
 });
- 
+
 Route::get('/auth/callback', function () {
-  $user = Socialite::driver('github')->user();
 
-  Route::post('/comments/{id}', [CommentController::class, 'store'])->name('posts.comments');
+    $githubUser = Socialite::driver('github')->user();
+    // dd($githubUser);
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+    $user = User::updateOrCreate(
+     [
+        'name' => $githubUser->nickname,
+        'email' => $githubUser->email,
+    ]);
+
+    Auth::login($user);
+
+    return redirect('/posts');
+
+
 });
 
-Route::get('/home', function() {
-  return redirect()->to('./posts');
+//goggle
+Route::get('/auth/redirect', function () {
+    return Socialite::driver('google')->redirect();
+});
 
-  
-  
-    // $user->token
+Route::get('/auth/callback', function () {
+
+    $User = Socialite::driver('google')->user();
+    // dd($githubUser);
+
+    $user = User::updateOrCreate(
+     [
+        'name' => $User->nickname,
+        'email' => $User->email,
+    ]);
+
+    Auth::login($user);
+
+    return redirect('/posts');
+
+
 });

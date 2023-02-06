@@ -14,8 +14,19 @@ return new class extends Migration
     public function up()
     {
         Schema::table('posts', function (Blueprint $table) {
-            // column modify on migration
-            $table->string('image_path')->nullable();
+            $table->string('image')->nullable() ;
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::table('posts', function (Blueprint $table) {
+            //
         });
     }
 };

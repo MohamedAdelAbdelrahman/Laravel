@@ -18,6 +18,5 @@ class PostResource extends JsonResource
             'id' => $this->id, //$post->id
             'description' => $this->description,
             'user' => new UserResource($this->user),
-        ];
-    }
+        ];    }
 }
